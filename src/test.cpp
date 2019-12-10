@@ -8,7 +8,7 @@
 #include <fstream>
 #include <map>
 
-#include "storage.hpp"
+#include "btree.hpp"
 
 using namespace std;
 using namespace chrono;
@@ -54,7 +54,7 @@ int main()
     modify_sequence modify =  get_sequence<modify_sequence>("modify.txt");
     read_sequence read = get_sequence<read_sequence>("read.txt");
 
-    storage st;
+    btree st;
     //cout << "count: " << write.size() << endl;
     
     progress = 0;
@@ -116,7 +116,7 @@ int main()
 /*
 int main() {
     
-    storage st;
+    btree st;
     
     st.insert("50");
     

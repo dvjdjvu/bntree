@@ -43,7 +43,7 @@ struct tree_s
     node_t *root; // указатель на корень дерева
 };
 
-class storage
+class btree
 {    
 public:
     
@@ -57,8 +57,8 @@ public:
     void print();
     void print(node_t *p, int indent);
     
-    storage();
-    ~storage();
+    btree();
+    ~btree();
     
 private:    
     tree_t *tree;

@@ -1,23 +1,23 @@
-#include "storage.hpp"
+#include "btree.hpp"
 
-storage::storage() {
+btree::btree() {
     this->tree = new tree_t();
 }
 
-storage::~storage() {
+btree::~btree() {
     this->clear(this->tree->root);
     delete this->tree->root;
 }
 
-node_t *storage::node_new() {
+node_t *btree::node_new() {
     return new node_t();
 }
 
-void storage::node_free(node_t *n) {
+void btree::node_free(node_t *n) {
     delete n;
 }
 
-void storage::clear(node_t *p) {
+void btree::clear(node_t *p) {
     if (p != NULL) {
         if (p->right) {
             this->clear(p->right);
@@ -31,7 +31,7 @@ void storage::clear(node_t *p) {
     }
 }
 
-uint64_t storage::search(string key) {
+uint64_t btree::search(string key) {
     if (!this->tree->root) {
         return -1;
     }
@@ -60,7 +60,7 @@ uint64_t storage::search(string key) {
     }
 }
 
-void storage::insert(string key, string val) {    
+void btree::insert(string key, string val) {    
     // Защита от вставки элемента который уже существует
     if (this->search(key) < 0) {
         return;
@@ -93,7 +93,7 @@ void storage::insert(string key, string val) {
     }
 }
 
-bool storage::erase_simple(node_t *search_node, node_t *prev_node) {
+bool btree::erase_simple(node_t *search_node, node_t *prev_node) {
     if (!search_node->left && !search_node->right) {
         // Удаляемый узел является листом.
 
@@ -140,7 +140,7 @@ bool storage::erase_simple(node_t *search_node, node_t *prev_node) {
     return true;
 }
 
-void storage::erase(uint64_t index) {
+void btree::erase(uint64_t index) {
 
     if (index < 0 || index > this->size() - 1) {
         return;
@@ -210,7 +210,7 @@ void storage::erase(uint64_t index) {
     }
 }
 
-uint64_t storage::get_child_weight(node_t *node) {
+uint64_t btree::get_child_weight(node_t *node) {
     if (node) {
         return node->weight;
     }
@@ -218,7 +218,7 @@ uint64_t storage::get_child_weight(node_t *node) {
     return 0;
 }
 
-data_t *storage::get(uint64_t index) {
+data_t *btree::get(uint64_t index) {
     if (index < 0 || index > this->size() - 1) {
         return NULL;
     }
@@ -240,7 +240,7 @@ data_t *storage::get(uint64_t index) {
     }
 }
 
-uint64_t storage::size() {
+uint64_t btree::size() {
     if (this->tree->root) {
         return this->tree->root->weight;
     }
@@ -248,11 +248,11 @@ uint64_t storage::size() {
     return 0;
 }
 
-void storage::print() {
+void btree::print() {
     this->print(this->tree->root, 5);
 }
 
-void storage::print(node_t *p, int indent) {
+void btree::print(node_t *p, int indent) {
     if (p != NULL) {
         if (p->right) {
             this->print(p->right, indent + 4);
