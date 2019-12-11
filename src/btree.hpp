@@ -14,6 +14,7 @@
 #include <iostream>
 #include <fstream>
 #include <iomanip>
+#include <cmath>
 
 using namespace std;
 using namespace chrono;
@@ -46,19 +47,24 @@ struct tree_s
 class btree
 {    
 public:
-    
-    void insert(string key, string val = "");
-    void erase(uint64_t index);
-    data_t *get(uint64_t index);
-    
-    uint64_t search(string key);
-        
-    uint64_t size();
-    void print();
-    void print(node_t *p, int indent);
-    
     btree();
     ~btree();
+    
+    // Вставка данных, ключ - значение
+    void insert(string key, string val = "");
+    // Удаление узла по индексу
+    void erase(uint64_t index);
+    // Взятие узла по индексу
+    data_t *get(uint64_t index);
+    
+    // Поиск узла по ключу, возвращает индекс узла
+    uint64_t search(string key);
+    
+    // Кол-во элементов в дереве
+    uint64_t size();
+    
+    // Печать дерева
+    void print();
     
 private:    
     tree_t *tree;
@@ -70,6 +76,10 @@ private:
     bool erase_simple(node_t *search_node, node_t *prev_node);
     
     void clear(node_t *p);
+    
+    void print(node_t *p, int indent);
+    
+    void balance(node_t *p, uint64_t index_node);
 };
 
 #endif

@@ -35,37 +35,37 @@ uint64_t btree::search(string key) {
     if (!this->tree->root) {
         return -1;
     }
-    
+
     node_t *search_node = this->tree->root;
     uint64_t index_node = this->get_child_weight(search_node->left);
 
-    for (;;) { 
+    for (;;) {
         if (key == search_node->data.key) {
             return index_node; // найден узел с таким ключем, вернем его индекс
         } else if (key > search_node->data.key) {
             search_node = search_node->right;
-            
-            if (search_node == NULL) 
+
+            if (search_node == NULL)
                 return -1;
-           
+
             index_node += (this->get_child_weight(search_node->left) + 1);
         } else {
             search_node = search_node->left;
-            
+
             if (search_node == NULL)
                 return -1;
-            
+
             index_node -= (this->get_child_weight(search_node->left) + 1);
         }
     }
 }
 
-void btree::insert(string key, string val) {    
+void btree::insert(string key, string val) {
     // Защита от вставки элемента который уже существует
     if (this->search(key) < 0) {
         return;
     }
-    
+
     node_t *search_node, **node;
 
     node = &this->tree->root;
@@ -140,6 +140,57 @@ bool btree::erase_simple(node_t *search_node, node_t *prev_node) {
     return true;
 }
 
+/*
+void btree::balance(node_t *p, uint64_t index) {
+    uint64_t lw = get_child_weight(p->left);
+    uint64_t rw = get_child_weight(p->right);
+
+    uint64_t _index;
+
+    if (abs(lw - rw) > 1) {
+        if (lw - rw > 1) {
+            // Левое поддерево весит больше правого
+            _index = index - 1;
+        } else if (rw - lw > 1) {
+            // Правое поддерево весит больше левого
+            _index = index + 1;
+        }
+
+        node_t *rep_node = p;
+        node_t *prev_node = NULL;
+        node_t *search_node = p;
+        uint64_t index_node = index;
+        
+        data_t _d = p->data;
+        
+        // Ищем узел со следующим индексом.
+        for (;;) {
+            if (_index == index_node) {
+                // Узел найден
+                break;
+            } else if (_index > index_node) {
+                search_node->weight--;
+                prev_node = search_node;
+                search_node = search_node->right;
+                index_node += (this->get_child_weight(search_node->left) + 1);
+            } else {
+                search_node->weight--;
+                prev_node = search_node;
+                search_node = search_node->left;
+                index_node -= (this->get_child_weight(search_node->right) + 1);
+            }
+
+            rep_node->data = search_node->data;
+            this->erase_simple(search_node, prev_node);
+        }
+
+        this->node_free(search_node);
+
+    }
+
+    return;
+}
+*/
 void btree::erase(uint64_t index) {
 
     if (index < 0 || index > this->size() - 1) {
@@ -185,7 +236,6 @@ void btree::erase(uint64_t index) {
                         search_node = search_node->left;
                         index_node -= (this->get_child_weight(search_node->right) + 1);
                     }
-
                 }
 
                 del_node->data = search_node->data;

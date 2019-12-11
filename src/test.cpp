@@ -50,9 +50,9 @@ int main()
     time_point<system_clock> time;
     nanoseconds total_time(0);
     
-    write_sequence write =  get_sequence<write_sequence>("write.txt");
-    modify_sequence modify =  get_sequence<modify_sequence>("modify.txt");
-    read_sequence read = get_sequence<read_sequence>("read.txt");
+    write_sequence write =  get_sequence<write_sequence>("./test/write.txt");
+    modify_sequence modify =  get_sequence<modify_sequence>("./test/modify.txt");
+    read_sequence read = get_sequence<read_sequence>("./test/read.txt");
 
     btree st;
     //cout << "count: " << write.size() << endl;
