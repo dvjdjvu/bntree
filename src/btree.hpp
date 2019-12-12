@@ -54,8 +54,12 @@ public:
     void insert(string key, string val = "");
     // Удаление узла по индексу
     void erase(uint64_t index);
+    // Удаление узла по ключу
+    void erase(string key);
     // Взятие узла по индексу
     data_t *get(uint64_t index);
+    // Взятие узла по ключу
+    data_t *get(string key);
     
     // Поиск узла по ключу, возвращает индекс узла
     uint64_t search(string key);

@@ -215,9 +215,9 @@ void btree::erase(uint64_t index) {
                 // Балансировка, если правый вес больше левого то удаляем через право
                 // иначе через лево
                 if (search_node->right->weight > search_node->left->weight) {
-                    _index = index + 1;
+                    _index = index_node + 1;
                 } else {
-                    _index = index - 1;
+                    _index = index_node - 1;
                 }
 
                 // Ищем узел со следующим индексом.
@@ -260,6 +260,71 @@ void btree::erase(uint64_t index) {
     }
 }
 
+void btree::erase(string key) {
+
+    node_t *search_node = this->tree->root;
+    uint64_t index_node = this->get_child_weight(search_node->left);
+
+    node_t *prev_node = NULL;
+
+    for (;;) {
+        if (key == search_node->data.key) {
+            if (this->erase_simple(search_node, prev_node)) {
+                // pass
+            } else if (search_node->left && search_node->right) {
+                // Самый сложный случай, удаляемый узел имеет 2-х детей.
+
+                // Обходим через право.
+                node_t *del_node = search_node;
+                uint64_t _index;
+                // Балансировка, если правый вес больше левого то удаляем через право
+                // иначе через лево
+                if (search_node->right->weight > search_node->left->weight) {
+                    _index = index_node + 1;
+                } else {
+                    _index = index_node - 1;
+                }
+
+                // Ищем узел со следующим индексом.
+                for (;;) {
+                    if (_index == index_node) {
+                        // Узел найден
+                        break;
+                    } else if (_index > index_node) {
+                        search_node->weight--;
+                        prev_node = search_node;
+                        search_node = search_node->right;
+                        index_node += (this->get_child_weight(search_node->left) + 1);
+                    } else {
+                        search_node->weight--;
+                        prev_node = search_node;
+                        search_node = search_node->left;
+                        index_node -= (this->get_child_weight(search_node->right) + 1);
+                    }
+                }
+
+                del_node->data = search_node->data;
+                this->erase_simple(search_node, prev_node);
+            }
+
+            this->node_free(search_node);
+
+            return;
+        } else if (key > search_node->data.key) {
+            search_node->weight--;
+            prev_node = search_node;
+            search_node = search_node->right;
+            index_node += (this->get_child_weight(search_node->left) + 1);
+        } else {
+            search_node->weight--;
+            prev_node = search_node;
+            search_node = search_node->left;
+            index_node -= (this->get_child_weight(search_node->right) + 1);
+        }
+
+    }
+}
+
 uint64_t btree::get_child_weight(node_t *node) {
     if (node) {
         return node->weight;
@@ -286,7 +351,23 @@ data_t *btree::get(uint64_t index) {
             search_node = search_node->left;
             index_node -= (this->get_child_weight(search_node->right) + 1);
         }
+    }
+}
 
+data_t *btree::get(string key) {
+    node_t *search_node = this->tree->root;
+    uint64_t index_node = this->get_child_weight(search_node->left);
+
+    for (;;) {
+        if (key == search_node->data.key) {
+            return &search_node->data;
+        } else if (key > search_node->data.key) {
+            search_node = search_node->right;
+            index_node += (this->get_child_weight(search_node->left) + 1);
+        } else {
+            search_node = search_node->left;
+            index_node -= (this->get_child_weight(search_node->right) + 1);
+        }
     }
 }
 
