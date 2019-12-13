@@ -62,17 +62,36 @@ uint64_t btree::search(string key) {
 
 void btree::insert(string key, string val) {
     // Защита от вставки элемента который уже существует
-    if (this->search(key) < 0) {
-        return;
-    }
+    //if (this->search(key) < 0) {
+    //    return;
+    //}
 
     node_t *search_node, **node;
 
     node = &this->tree->root;
     search_node = this->tree->root;
-
+    uint64_t index_node;
+    
+    if (!this->tree->root) {
+        index_node = 0;
+    } else {
+        index_node = this->get_child_weight(search_node->left);
+    }
+    
+    uint64_t index_del = -1;
+    //cout << "index_node:" << index_node << endl;
     for (;;) {
+        if (search_node && key == search_node->data.key) {
+            // Такой ключ уже есть, сохраняем его индекс.
+            // Потом удалим его, что бы не было дублирование ключей.
+            //cout << "= index_node:" << index_node << endl;
+            
+            search_node->data.val = val;
+            index_del = index_node;
+        }
+        
         if (search_node == NULL) {
+            // Добавялем узел
             search_node = *node = this->node_new();
 
             search_node->data.key = key;
@@ -80,17 +99,37 @@ void btree::insert(string key, string val) {
             search_node->weight = 1; // новый узел имеет вес 1
 
             search_node->left = search_node->right = NULL;
-            return;
+            
+            break;
         } else if (key > search_node->data.key) {
+            // Идем направо
             search_node->weight++; // увеличиваем вес узла
             node = &search_node->right;
             search_node = search_node->right;
+            
+            if (search_node) 
+                index_node += (this->get_child_weight(search_node->left) + 1);
+            
+            //cout << "> index_node:" << index_node << endl;
         } else {
+            // Идем налево
             search_node->weight++; // увеличиваем вес узла
             node = &search_node->left;
             search_node = search_node->left;
-        }
+            
+            if (search_node) 
+                index_node -= (this->get_child_weight(search_node->left) + 1);
+
+            //cout << "< index_node:" << index_node << endl;
+        } 
     }
+    
+    if (index_del >= 0) {
+        //cout << "del index:" << index_del << endl;
+        this->erase(index_del);
+    }
+    
+    return;
 }
 
 bool btree::erase_simple(node_t *search_node, node_t *prev_node) {
@@ -190,7 +229,7 @@ void btree::balance(node_t *p, uint64_t index) {
 
     return;
 }
-*/
+ */
 void btree::erase(uint64_t index) {
 
     if (index < 0 || index > this->size() - 1) {
@@ -369,6 +408,8 @@ data_t *btree::get(string key) {
             index_node -= (this->get_child_weight(search_node->right) + 1);
         }
     }
+    
+    return NULL;
 }
 
 uint64_t btree::size() {
@@ -394,7 +435,7 @@ void btree::print(node_t *p, int indent) {
         if (p->right) {
             std::cout << " /\n" << std::setw(indent) << ' ';
         }
-        std::cout << p->data.key << "\n ";
+        std::cout << p->data.key << ":" << p->data.val << "\n ";
         if (p->left) {
             std::cout << std::setw(indent) << ' ' << " \\\n";
             this->print(p->left, indent + 4);

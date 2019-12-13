@@ -118,32 +118,32 @@ int main() {
     
     btree st;
     
-    st.insert("50");
+    st.insert("50", "ssss");
     
     st.insert("25");
     
-    st.insert("15");
-    st.insert("17");
-    st.insert("11");
+    //st.insert("15");
+    //st.insert("17");
+    //st.insert("11");
     
-    st.insert("35");
-    st.insert("30");
-    st.insert("40");
+    //st.insert("35");
+    //st.insert("30");
+    //st.insert("40");
     
     st.insert("75");
     
-    st.insert("65");
-    st.insert("60");
-    st.insert("70");
+    //st.insert("65");
+    //st.insert("60");
+    //st.insert("70");
     
-    st.insert("90");
-    st.insert("80");
-    st.insert("95");
+    //st.insert("90");
+    //st.insert("80");
+    //st.insert("95");
     
     cout << "size(): " << st.size() << endl;
     
-    for (int i = 0; i < st.size(); i++ )
-        st.get(i);
+    //for (int i = 0; i < st.size(); i++ )
+    //    st.get(i);
     
     st.print();
     
@@ -151,14 +151,18 @@ int main() {
     
     puts("\nerase");
     
-    st.erase(7);
+    //st.erase(7);
     
     puts("\nerase ok");
     
+    st.insert("50", "bbbb");
+    
     st.print();
     
-    for (int i = 0; i < st.size(); i++ )
-        st.get(i);
+    //for (int i = 0; i < st.size(); i++ )
+    //    st.get(i);
+    
+    puts("###############");
     
     //std::string str = "12345678";
     //cout << str.substr(0, 2) << endl;
