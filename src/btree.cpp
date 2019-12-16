@@ -81,6 +81,8 @@ void btree::insert(string key, string val) {
     uint64_t index_del = -1;
     //cout << "index_node:" << index_node << endl;
     for (;;) {
+        this->balance_simple(search_node);
+        
         if (search_node && key == search_node->data.key) {
             // Такой ключ уже есть, сохраняем его индекс.
             // Потом удалим его, что бы не было дублирование ключей.
@@ -177,6 +179,72 @@ bool btree::erase_simple(node_t *search_node, node_t *prev_node) {
     }
 
     return true;
+}
+
+/*
+ * Простая балансировка, когда у узла один ребенок и у ребенка только один ребенок.
+ * 4-е возможные ситуации:
+ * 0     | 0     |     0 |     0
+ *  \    |   \   |    /  |   /
+ *   0   |     0 |   0   | 0
+ *    \  |    /  |  /    |  \
+ *     0 |   0   | 0     |   0
+ */
+void btree::balance_simple(node_t *p) {
+    if (!p) {
+        return;
+    }
+    
+    node_t *child;
+    
+    if (p->left == NULL && get_child_weight(p->right) == 2) {
+        child = p->right;
+        child->weight--;
+        if (child->right) {
+            // 1-ый случай на картинке
+            p->left = p->right;
+            p->right = child->right;
+            
+            child->left = child->right = NULL;
+            
+            this->tmb_data = p->data;
+            p->data = p->left->data;
+            p->left->data = this->tmb_data;
+        } else if (child->left) {
+            // 2-ой случай на картинке
+            p->left = child->left;
+            
+            child->left = child->right = NULL;
+            
+            this->tmb_data = p->data;
+            p->data = p->left->data;
+            p->left->data = this->tmb_data;
+            
+        }
+    } else if (p->right == NULL && get_child_weight(p->left) == 2) {
+        child = p->left;
+        child->weight--;
+        if (child->left) {
+            // 3-ий случай на картинке
+            p->right = p->left;
+            p->left = child->left;
+            
+            child->left = child->right = NULL;
+            
+            this->tmb_data = p->data;
+            p->data = p->right->data;
+            p->right->data = this->tmb_data;
+        } else if (child->right) {
+            // 4-ый случай на картинке
+            p->right = child->right;
+            
+            child->left = child->right = NULL;
+            
+            this->tmb_data = p->data;
+            p->data = p->right->data;
+            p->right->data = this->tmb_data;
+        }
+    }
 }
 
 /*

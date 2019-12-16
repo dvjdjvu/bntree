@@ -68,6 +68,7 @@ public:
     
 private:    
     tree_t *tree;
+    data_t tmb_data;
     
     uint64_t get_child_weight(node_t *node);
     node_t *node_new();
@@ -79,6 +80,7 @@ private:
     
     void print(node_t *p, int indent);
     
+    void balance_simple(node_t *p);
     void balance(node_t *p, uint64_t index_node);
 };
 
