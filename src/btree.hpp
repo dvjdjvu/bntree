@@ -33,6 +33,8 @@ struct node_s {
     
     node_t *left;
     node_t *right;
+    
+    node_t *parent;
 };
 
 struct tree_s
@@ -69,19 +71,23 @@ public:
 private:    
     tree_t *tree;
     data_t tmb_data;
+    node_t *tmb_node;
     
     uint64_t get_child_weight(node_t *node);
     node_t *node_new();
     void node_free(node_t *e);
     
-    bool erase_simple(node_t *search_node, node_t *prev_node);
+    bool erase_simple(node_t *search_node);
     
     void clear(node_t *p);
     
     void print(node_t *p, int indent);
     
     void balance_simple(node_t *p);
-    void balance(node_t *p, uint64_t index_node);
+    void balance(node_t *p);
+    
+    // Ближайшая степень 2-ки к числу
+    uint64_t cpl2(uint64_t x);
 };
 
 #endif

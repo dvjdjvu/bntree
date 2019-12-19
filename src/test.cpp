@@ -77,7 +77,7 @@ int main()
     cout << "insert have done" << endl;
     
     cout << "\ncount: " << st.size() << " add end" << endl;
-    
+    //st.print();
     //return -1;
     
     progress = 0;
@@ -94,7 +94,6 @@ int main()
         st.insert(mitr->second);
         
         data_t *d = st.get(ritr->first);
-        
         
         total_time += system_clock::now() - time;
         if (ritr->second != d->key)
@@ -118,19 +117,28 @@ int main() {
     
     btree st;
     
-    st.insert("50", "ssss");
+    //cout << st.cpl2(1) << endl;
+    //cout << st.cpl2(2) << endl;
+    //cout << st.cpl2(3) << endl;
+    //cout << st.cpl2(1023) << endl;
+    //cout << st.cpl2(4294967295) << endl;
+    //cout << st.cpl2(4294967297) << endl;
+    
+    //return -1;
+    
+    st.insert("50");
     
     st.insert("25");
     
-    //st.insert("15");
+    st.insert("15");
     //st.insert("17");
-    //st.insert("11");
+    st.insert("11");
     
     //st.insert("35");
     //st.insert("30");
     //st.insert("40");
     
-    st.insert("75");
+    //st.insert("75");
     
     //st.insert("65");
     //st.insert("60");
@@ -151,11 +159,11 @@ int main() {
     
     puts("\nerase");
     
-    //st.erase(7);
+    st.erase(1);
     
     puts("\nerase ok");
     
-    st.insert("50", "bbbb");
+    //st.insert("50", "bbbb");
     
     st.print();
     
