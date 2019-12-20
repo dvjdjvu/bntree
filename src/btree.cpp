@@ -87,7 +87,6 @@ void btree::insert(string key, string val) {
             search_node->data.key = key;
             search_node->data.val = val;
             search_node->weight = 1; // новый узел имеет вес 1
-            search_node->depth = 1; // новый узел имеет глубину 1
 
             search_node->left = search_node->right = NULL;
             search_node->parent = prev_node;
@@ -129,7 +128,7 @@ void btree::insert(string key, string val) {
         }
     }
 
-    this->balance2(search_node);
+    this->balance(search_node);
 
     return;
 }
