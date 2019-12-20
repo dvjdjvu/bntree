@@ -75,19 +75,10 @@ void btree::insert(string key, string val) {
     }
 
     uint64_t index_del = -1;
-    //cout << "index_node:" << index_node << endl;
+
     for (;;) {
         //this->balance_simple(search_node);
         //this->balance(search_node);
-
-        if (search_node && key == search_node->data.key) {
-            // Такой ключ уже есть, сохраняем его индекс.
-            // Потом удалим его, что бы не было дублирование ключей.
-            //cout << "= index_node:" << index_node << endl;
-
-            search_node->data.val = val;
-            index_del = index_node;
-        }
 
         if (search_node == NULL) {
             // Добавялем узел
@@ -96,6 +87,7 @@ void btree::insert(string key, string val) {
             search_node->data.key = key;
             search_node->data.val = val;
             search_node->weight = 1; // новый узел имеет вес 1
+            search_node->depth = 1; // новый узел имеет глубину 1
 
             search_node->left = search_node->right = NULL;
             search_node->parent = prev_node;
@@ -111,8 +103,7 @@ void btree::insert(string key, string val) {
             if (search_node)
                 index_node += (this->get_child_weight(search_node->left) + 1);
 
-            //cout << "> index_node:" << index_node << endl;
-        } else {
+        } else if (key < search_node->data.key) {
             // Идем налево
             prev_node = search_node;
             search_node->weight++; // увеличиваем вес узла
@@ -121,23 +112,32 @@ void btree::insert(string key, string val) {
 
             if (search_node)
                 index_node -= (this->get_child_weight(search_node->left) + 1);
+        } else {
+            search_node->data.val = val;
 
-            //cout << "< index_node:" << index_node << endl;
+            // Идем назад и отменяем изменение веса у верхних узлов
+            for (;;) {
+
+                if (search_node->parent) {
+                    search_node = search_node->parent;
+                } else {
+                    return;
+                }
+
+                search_node->weight--;
+            }
         }
     }
 
-    if (index_del >= 0) {
-        //cout << "del index:" << index_del << endl;
-        this->erase(index_del);
-    }
+    this->balance2(search_node);
 
     return;
 }
 
 bool btree::erase_simple(node_t *search_node) {
-    
+
     node_t *prev_node = search_node->parent;
-    
+
     if (!search_node->left && !search_node->right) {
         // Удаляемый узел является листом.
 
@@ -185,7 +185,7 @@ bool btree::erase_simple(node_t *search_node) {
 
     } else {
         // Удаляемый узел имеет двух детей. Такой случай здесь не обрабатывается.
-        
+
         return false;
     }
 
@@ -201,7 +201,7 @@ void btree::erase(uint64_t index) {
     node_t *search_node = this->tree->root;
     uint64_t index_node = this->get_child_weight(search_node->left);
 
-    for (;;) {        
+    for (;;) {
         if (index == index_node) {
             if (this->erase_simple(search_node)) {
                 // pass
@@ -218,7 +218,7 @@ void btree::erase(uint64_t index) {
                 } else {
                     _index = index_node - 1;
                 }
-                
+
                 // Ищем узел со следующим индексом.
                 for (;;) {
                     if (_index == index_node) {
@@ -234,7 +234,7 @@ void btree::erase(uint64_t index) {
                         index_node -= (this->get_child_weight(search_node->right) + 1);
                     }
                 }
-                
+
                 del_node->data = search_node->data;
                 this->erase_simple(search_node);
             }
@@ -374,20 +374,20 @@ void btree::print() {
     this->print(this->tree->root, 5);
 }
 
-void btree::print(node_t *p, int indent) {    
+void btree::print(node_t *p, int indent) {
     if (p != NULL) {
         if (p->right) {
             this->print(p->right, indent + 4);
         }
         if (indent) {
-            //std::cout << std::setw(indent) << ' ' << p->weight << ' ';
-            std::cout << std::setw(indent) << ' ';
+            std::cout << std::setw(indent) << ' ' << p->weight << ' ';
+            //std::cout << std::setw(indent) << ' ';
         }
         if (p->right) {
             std::cout << " /\n" << std::setw(indent) << ' ';
         }
-        //std::cout << p->data.key << ":" << p->data.val << "\n ";
-        std::cout <<  p->data.key << ":" << p << ":" << p->parent << "\n ";
+        std::cout << p->data.key << ":" << p->data.val << "\n ";
+        //std::cout << p->data.key << ":" << p << ":" << p->parent << "\n ";
         if (p->left) {
             std::cout << std::setw(indent) << ' ' << " \\\n";
             this->print(p->left, indent + 4);
@@ -407,72 +407,6 @@ uint64_t btree::cpl2(uint64_t x) {
 }
 
 /*
- * Простая балансировка, когда у узла один ребенок и у ребенка только один ребенок.
- * 4-е возможные ситуации:
- * 0     | 0     |     0 |     0
- *  \    |   \   |    /  |   /
- *   0   |     0 |   0   | 0
- *    \  |    /  |  /    |  \
- *     0 |   0   | 0     |   0
- */
-void btree::balance_simple(node_t *p) {
-    if (!p) {
-        return;
-    }
-
-    node_t *child;
-
-    if (p->left == NULL && get_child_weight(p->right) == 2) {
-        child = p->right;
-        child->weight--;
-        if (child->right) {
-            // 1-ый случай на картинке
-            p->left = p->right;
-            p->right = child->right;
-
-            child->left = child->right = NULL;
-
-            this->tmb_data = p->data;
-            p->data = p->left->data;
-            p->left->data = this->tmb_data;
-        } else if (child->left) {
-            // 2-ой случай на картинке
-            p->left = child->left;
-
-            child->left = child->right = NULL;
-
-            this->tmb_data = p->data;
-            p->data = p->left->data;
-            p->left->data = this->tmb_data;
-
-        }
-    } else if (p->right == NULL && get_child_weight(p->left) == 2) {
-        child = p->left;
-        child->weight--;
-        if (child->left) {
-            // 3-ий случай на картинке
-            p->right = p->left;
-            p->left = child->left;
-
-            child->left = child->right = NULL;
-
-            this->tmb_data = p->data;
-            p->data = p->right->data;
-            p->right->data = this->tmb_data;
-        } else if (child->right) {
-            // 4-ый случай на картинке
-            p->right = child->right;
-
-            child->left = child->right = NULL;
-
-            this->tmb_data = p->data;
-            p->data = p->right->data;
-            p->right->data = this->tmb_data;
-        }
-    }
-}
-
-/*
  * Балансировка поворотом
  * Балансировка делается на основе весов левого и правого поддерева
  */
@@ -481,69 +415,117 @@ void btree::balance(node_t *p) {
         return;
     }
 
-    uint64_t lw = get_child_weight(p->left);
-    uint64_t rw = get_child_weight(p->right);
-    uint64_t nd2 = cpl2(lw + rw); // nearest degree 2
-    
-    node_t *child, *root;
-    
-    if (lw > nd2/2) {
-        // Правый поворот. 
-        // Вес левого поддерева больше, чем половина от ближайшей степени двойки 
-        // к сумме весов левого и правого поддерева.
-        
-        child = p->left;
-        
-        // Такой поворот не изменит ситуацию
-        if (child->right == NULL) {
-            return;
+    node_t *child = NULL;
+    uint64_t ld = 0;
+    uint64_t rd = 0;
+
+    for (;;) {
+
+        ld = weight_to_depth(p->left);
+        rd = weight_to_depth(p->right);
+
+        if (ld > rd && ld - rd > 1) {
+            // Правый поворот. 
+            // Глубина левого поддерева больше, чем глубина правого
+
+            //cout << "ld - rd " << ld - rd << endl;
+
+            child = p->left;
+
+            // Такой поворот не изменит ситуацию
+            if (child->right == NULL) {
+                return;
+            }
+            
+            this->tmb_data = p->data;
+            p->data = child->data;
+            child->data = this->tmb_data;
+
+            p->left = child->left;
+            if (p->left) {
+                p->left->parent = p;
+            }
+
+            child->left = child->right;
+            if (child->left) {
+                child->left->parent = child;
+            }
+            
+            child->right = p->right;
+            if (child->right) {
+                child->right->parent = child;
+            }
+            
+            p->right = child;
+
+            if (p->right) {
+                p->right->weight = 1 + get_child_weight(p->right->left) + get_child_weight(p->right->right);
+            }
+
+            p->weight = 1 + get_child_weight(p->left) + get_child_weight(p->right);
+
+            break;
+        } else if (rd > ld && rd - ld > 1) {
+            // Левый поворот. 
+            // Глубина правого поддерева больше, чем глубина левого
+
+            child = p->right;
+
+            // Такой поворот не изменит ситуацию
+            if (child->left == NULL) {
+                return;
+            }
+            
+            this->tmb_data = p->data;
+            p->data = child->data;
+            child->data = this->tmb_data;
+
+            p->right = child->right;
+            if (p->right) {
+                p->right->parent = p;
+            }
+
+            child->right = child->left;
+            if (child->right) {
+                child->right->parent = child;
+            }
+            
+            child->left = p->left;
+            if (child->left) {
+                child->left->parent = child;
+            }
+            
+            p->left = child;
+
+            if (p->left) {
+                p->left->weight = 1 + get_child_weight(p->left->left) + get_child_weight(p->left->right);
+            }
+
+            p->weight = 1 + get_child_weight(p->left) + get_child_weight(p->right);
+            
+            break;
         }
-        
-        this->tmb_data = p->data;
-        p->data = child->data;
-        child->data = this->tmb_data;
-        
-        p->left = child->left;
-        
-        child->left = child->right;
-        child->right = p->right;
-        p->right = child;
-        
-        if (p->right) {
-            p->right->weight = 1 + get_child_weight(p->right->left) + get_child_weight(p->right->right);
+
+        if (p->parent) {
+            p = p->parent;
+        } else {
+            break;
         }
-        
-        p->weight = 1 + get_child_weight(p->left) + get_child_weight(p->right);
-        
-    } else if (rw > nd2/2) {
-        // Левый поворот. 
-        // Вес правого поддерева больше, чем половина от ближайшей степени двойки 
-        // к сумме весов левого и правого поддерева.
-        
-        child = p->right;
-        
-        // Такой поворот не изменит ситуацию
-        if (child->left == NULL) {
-            return;
-        }
-        
-        this->tmb_data = p->data;
-        p->data = child->data;
-        child->data = this->tmb_data;
-        
-        p->right = child->right;
-        
-        child->right = child->left;
-        child->left = p->left;
-        p->left = child;
-        
-        
-        if (p->left) {
-            p->left->weight = 1 + get_child_weight(p->left->left) + get_child_weight(p->left->right);
-        }
-        
-        p->weight = 1 + get_child_weight(p->left) + get_child_weight(p->right);
     }
-    
+
     return;
+}
+
+long btree::ilog2(long d) {
+    int result;
+    std::frexp(d, &result);
+    return result - 1;
+}
+
+uint64_t btree::weight_to_depth(node_t *p) {
+    if (p == NULL) {
+        return 0;
+    }
+
+    return this->ilog2(this->cpl2(p->weight));
 }

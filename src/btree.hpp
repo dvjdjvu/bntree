@@ -82,12 +82,18 @@ private:
     void clear(node_t *p);
     
     void print(node_t *p, int indent);
-    
-    void balance_simple(node_t *p);
+
     void balance(node_t *p);
     
+public:
     // Ближайшая степень 2-ки к числу
     uint64_t cpl2(uint64_t x);
+    
+    // Быстрый логарифм
+    long ilog2(long x);
+    
+    // Вес узла к глубине
+    uint64_t weight_to_depth(node_t *p);
 };
 
 #endif

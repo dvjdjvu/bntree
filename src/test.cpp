@@ -120,13 +120,14 @@ int main() {
     //cout << st.cpl2(1) << endl;
     //cout << st.cpl2(2) << endl;
     //cout << st.cpl2(3) << endl;
-    //cout << st.cpl2(1023) << endl;
+    //long a = st.cpl2(7);
+    //cout << st.ilog2(a) << endl;
     //cout << st.cpl2(4294967295) << endl;
     //cout << st.cpl2(4294967297) << endl;
     
     //return -1;
     
-    st.insert("50");
+    st.insert("50", "ssss");
     
     st.insert("25");
     
@@ -138,9 +139,9 @@ int main() {
     //st.insert("30");
     //st.insert("40");
     
-    //st.insert("75");
+    st.insert("75");
     
-    //st.insert("65");
+    st.insert("65");
     //st.insert("60");
     //st.insert("70");
     
@@ -159,11 +160,11 @@ int main() {
     
     puts("\nerase");
     
-    st.erase(1);
+    //st.erase(1);
     
     puts("\nerase ok");
     
-    //st.insert("50", "bbbb");
+    st.insert("50", "bbbb");
     
     st.print();
     
