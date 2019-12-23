@@ -15,8 +15,6 @@
 using namespace std;
 using namespace chrono;
 
-#define EMPTY ""
-
 typedef struct tree_s tree_t;
 typedef struct node_s node_t;
 typedef struct data_s data_t;

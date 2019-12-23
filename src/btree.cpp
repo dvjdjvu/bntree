@@ -77,8 +77,6 @@ void btree::insert(string key, string val) {
     uint64_t index_del = -1;
 
     for (;;) {
-        //this->balance_simple(search_node);
-        //this->balance(search_node);
 
         if (search_node == NULL) {
             // Добавялем узел
@@ -394,6 +392,9 @@ void btree::print(node_t *p, int indent) {
     }
 }
 
+/*
+ * Возвращает первое число в степени 2, которое больше или ровно x
+ */
 uint64_t btree::cpl2(uint64_t x) {
     x = x - 1;
     x = x | (x >> 1);
@@ -426,8 +427,6 @@ void btree::balance(node_t *p) {
         if (ld > rd && ld - rd > 1) {
             // Правый поворот. 
             // Глубина левого поддерева больше, чем глубина правого
-
-            //cout << "ld - rd " << ld - rd << endl;
 
             child = p->left;
 
@@ -515,12 +514,18 @@ void btree::balance(node_t *p) {
     return;
 }
 
+/*
+ * Двоичный логарифм от числа
+ */
 long btree::ilog2(long d) {
     int result;
     std::frexp(d, &result);
     return result - 1;
 }
 
+/*
+ * Вес к глубине
+ */
 uint64_t btree::weight_to_depth(node_t *p) {
     if (p == NULL) {
         return 0;
