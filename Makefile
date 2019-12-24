@@ -12,12 +12,12 @@ INCS = -I$(SRC)
 LDLIBS = -O0 -W -Wall
 
 		
-DEPSPP = $(SRC)/btree.hpp 
+DEPSPP = $(SRC)/bntree.hpp 
 
-OBJS = $(BUILD)/btree.pp.o \
+OBJS = $(BUILD)/bntree.pp.o \
 	$(BUILD)/test.pp.o 
 	
-OBJSPP = $(BUILD)/btree.pp.o \
+OBJSPP = $(BUILD)/bntree.pp.o \
 	  $(BUILD)/test.pp.o 
 
 BINS = $(BUILD)/test
@@ -32,9 +32,9 @@ $(BUILD)/test: \
 	$(OBJS)
 	$(PP) $(CFLAGS) $(PFLAGS) -o $(BUILD)/test $(LIBS) $(OBJS) $(LDLIBS)
 
-$(BUILD)/btree.pp.o: $(DEPSPP) \
-	$(SRC)/btree.cpp
-	$(PP) -c $(CFLAGS) $(PFLAGS) $(INCS) -o $(BUILD)/btree.pp.o $(SRC)/btree.cpp
+$(BUILD)/bntree.pp.o: $(DEPSPP) \
+	$(SRC)/bntree.cpp
+	$(PP) -c $(CFLAGS) $(PFLAGS) $(INCS) -o $(BUILD)/bntree.pp.o $(SRC)/bntree.cpp
 
 $(BUILD)/test.pp.o: $(DEPSPP) \
 	$(SRC)/test.cpp

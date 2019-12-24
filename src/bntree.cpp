@@ -1,23 +1,23 @@
-#include "btree.hpp"
+#include "bntree.hpp"
 
-btree::btree() {
+bntree::bntree() {
     this->tree = new tree_t();
 }
 
-btree::~btree() {
+bntree::~bntree() {
     this->clear(this->tree->root);
     delete this->tree->root;
 }
 
-node_t *btree::node_new() {
+node_t *bntree::node_new() {
     return new node_t();
 }
 
-void btree::node_free(node_t *n) {
+void bntree::node_free(node_t *n) {
     delete n;
 }
 
-void btree::clear(node_t *p) {
+void bntree::clear(node_t *p) {
     if (p != NULL) {
         if (p->right) {
             this->clear(p->right);
@@ -31,7 +31,7 @@ void btree::clear(node_t *p) {
     }
 }
 
-uint64_t btree::search(string key) {
+uint64_t bntree::search(string key) {
     if (!this->tree->root) {
         return -1;
     }
@@ -60,7 +60,7 @@ uint64_t btree::search(string key) {
     }
 }
 
-void btree::insert(string key, string val) {
+void bntree::insert(string key, string val) {
     node_t *search_node, *prev_node, **node;
 
     node = &this->tree->root;
@@ -131,7 +131,7 @@ void btree::insert(string key, string val) {
     return;
 }
 
-bool btree::erase_simple(node_t *search_node) {
+bool bntree::erase_simple(node_t *search_node) {
 
     node_t *prev_node = search_node->parent;
 
@@ -189,7 +189,7 @@ bool btree::erase_simple(node_t *search_node) {
     return true;
 }
 
-void btree::erase(uint64_t index) {
+void bntree::erase(uint64_t index) {
 
     if (index < 0 || index > this->size() - 1) {
         return;
@@ -251,7 +251,7 @@ void btree::erase(uint64_t index) {
     }
 }
 
-void btree::erase(string key) {
+void bntree::erase(string key) {
 
     node_t *search_node = this->tree->root;
     uint64_t index_node = this->get_child_weight(search_node->left);
@@ -311,7 +311,7 @@ void btree::erase(string key) {
     }
 }
 
-uint64_t btree::get_child_weight(node_t *node) {
+uint64_t bntree::get_child_weight(node_t *node) {
     if (node) {
         return node->weight;
     }
@@ -319,7 +319,7 @@ uint64_t btree::get_child_weight(node_t *node) {
     return 0;
 }
 
-data_t *btree::get(uint64_t index) {
+data_t *bntree::get(uint64_t index) {
     if (index < 0 || index > this->size() - 1) {
         return NULL;
     }
@@ -340,7 +340,7 @@ data_t *btree::get(uint64_t index) {
     }
 }
 
-data_t *btree::get(string key) {
+data_t *bntree::get(string key) {
     node_t *search_node = this->tree->root;
     uint64_t index_node = this->get_child_weight(search_node->left);
 
@@ -359,7 +359,7 @@ data_t *btree::get(string key) {
     return NULL;
 }
 
-uint64_t btree::size() {
+uint64_t bntree::size() {
     if (this->tree->root) {
         return this->tree->root->weight;
     }
@@ -367,11 +367,11 @@ uint64_t btree::size() {
     return 0;
 }
 
-void btree::print() {
+void bntree::print() {
     this->print(this->tree->root, 5);
 }
 
-void btree::print(node_t *p, int indent) {
+void bntree::print(node_t *p, int indent) {
     if (p != NULL) {
         if (p->right) {
             this->print(p->right, indent + 4);
@@ -395,7 +395,7 @@ void btree::print(node_t *p, int indent) {
 /*
  * Возвращает первое число в степени 2, которое больше или ровно x
  */
-uint64_t btree::cpl2(uint64_t x) {
+uint64_t bntree::cpl2(uint64_t x) {
     x = x - 1;
     x = x | (x >> 1);
     x = x | (x >> 2);
@@ -410,7 +410,7 @@ uint64_t btree::cpl2(uint64_t x) {
  * Балансировка поворотом
  * Балансировка делается на основе весов левого и правого поддерева
  */
-void btree::balance(node_t *p) {
+void bntree::balance(node_t *p) {
     if (!p) {
         return;
     }
@@ -517,7 +517,7 @@ void btree::balance(node_t *p) {
 /*
  * Двоичный логарифм от числа
  */
-long btree::ilog2(long d) {
+long bntree::ilog2(long d) {
     int result;
     std::frexp(d, &result);
     return result - 1;
@@ -526,7 +526,7 @@ long btree::ilog2(long d) {
 /*
  * Вес к глубине
  */
-uint64_t btree::weight_to_depth(node_t *p) {
+uint64_t bntree::weight_to_depth(node_t *p) {
     if (p == NULL) {
         return 0;
     }

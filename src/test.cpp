@@ -8,7 +8,7 @@
 #include <fstream>
 #include <map>
 
-#include "btree.hpp"
+#include "bntree.hpp"
 
 using namespace std;
 using namespace chrono;
@@ -54,7 +54,7 @@ int main()
     modify_sequence modify =  get_sequence<modify_sequence>("./test/modify.txt");
     read_sequence read = get_sequence<read_sequence>("./test/read.txt");
 
-    btree st;
+    bntree st;
     //cout << "count: " << write.size() << endl;
     
     progress = 0;
@@ -115,7 +115,7 @@ int main()
 /*
 int main() {
     
-    btree st;
+    bntree st;
     
     //cout << st.cpl2(1) << endl;
     //cout << st.cpl2(2) << endl;

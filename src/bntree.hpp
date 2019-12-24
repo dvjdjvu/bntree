@@ -40,11 +40,11 @@ struct tree_s
     node_t *root; // указатель на корень дерева
 };
 
-class btree
+class bntree
 {    
 public:
-    btree();
-    ~btree();
+    bntree();
+    ~bntree();
     
     // Вставка данных, ключ - значение
     void insert(string key, string val = "");
