@@ -61,6 +61,9 @@ uint64_t bntree::search(string key) {
 }
 
 void bntree::insert(string key, string val) {
+
+    //cout << "insert " << key << endl;
+
     node_t *search_node, *prev_node, **node;
 
     node = &this->tree->root;
@@ -110,6 +113,7 @@ void bntree::insert(string key, string val) {
             if (search_node)
                 index_node -= (this->get_child_weight(search_node->left) + 1);
         } else {
+            // Если такой ключ уже существует, то обновляем значение.
             search_node->data.val = val;
 
             // Идем назад и отменяем изменение веса у верхних узлов
@@ -126,6 +130,8 @@ void bntree::insert(string key, string val) {
         }
     }
 
+    //cout << "insert balance " << key << endl;
+    //this->print();
     this->balance(search_node);
 
     return;
@@ -369,6 +375,7 @@ uint64_t bntree::size() {
 
 void bntree::print() {
     this->print(this->tree->root, 5);
+    //puts("\n###########################");
 }
 
 void bntree::print(node_t *p, int indent) {
@@ -377,33 +384,19 @@ void bntree::print(node_t *p, int indent) {
             this->print(p->right, indent + 4);
         }
         if (indent) {
-            std::cout << std::setw(indent) << ' ' << p->weight << ' ';
-            //std::cout << std::setw(indent) << ' ';
+            //std::cout << std::setw(indent) << ' ' << p->weight << ' ';
+            std::cout << std::setw(indent) << ' ';
         }
         if (p->right) {
             std::cout << " /\n" << std::setw(indent) << ' ';
         }
-        std::cout << p->data.key << ":" << p->data.val << "\n ";
-        //std::cout << p->data.key << ":" << p << ":" << p->parent << "\n ";
+        //std::cout << p->data.key << ":" << p->data.val << "\n ";
+        std::cout << p->data.key << ":" << p << ":" << p->parent << "\n ";
         if (p->left) {
             std::cout << std::setw(indent) << ' ' << " \\\n";
             this->print(p->left, indent + 4);
         }
     }
-}
-
-/*
- * Возвращает первое число в степени 2, которое больше или ровно x
- */
-uint64_t bntree::cpl2(uint64_t x) {
-    x = x - 1;
-    x = x | (x >> 1);
-    x = x | (x >> 2);
-    x = x | (x >> 4);
-    x = x | (x >> 8);
-    x = x | (x >> 16);
-    x = x | (x >> 32);
-    return x + 1;
 }
 
 /*
@@ -416,91 +409,78 @@ void bntree::balance(node_t *p) {
     }
 
     node_t *child = NULL;
+    node_t *parent = NULL;
     uint64_t ld = 0;
     uint64_t rd = 0;
 
     for (;;) {
 
-        ld = weight_to_depth(p->left);
-        rd = weight_to_depth(p->right);
+        ld = this->weight_to_depth(p->left);
+        rd = this->weight_to_depth(p->right);
+
+        //cout << "p->data.key " << p->data.key << " ld " << ld << " rd " << rd;
+        //cout << " lw " << get_child_weight(p->left) << " rw " << get_child_weight(p->right) << endl;
+        //printf("ld %ld rd %ld\n", ld, rd);
 
         if (ld > rd && ld - rd > 1) {
             // Правый поворот. 
             // Глубина левого поддерева больше, чем глубина правого
 
             child = p->left;
+            parent = p->parent;
 
-            // Такой поворот не изменит ситуацию
-            if (child->right == NULL) {
-                return;
+            if (parent) {
+                if (parent->right == p) {
+                    parent->right = child;
+                } else if (parent->left == p) {
+                    parent->left = child;
+                }
+            } else {
+                this->tree->root = child;
             }
-            
-            this->tmb_data = p->data;
-            p->data = child->data;
-            child->data = this->tmb_data;
+            child->parent = parent;
+            p->parent = child;
 
-            p->left = child->left;
+            p->left = child->right;
             if (p->left) {
                 p->left->parent = p;
             }
 
-            child->left = child->right;
-            if (child->left) {
-                child->left->parent = child;
-            }
+            child->right = p;
+
+            p->weight = 1 + this->get_child_weight(p->left) + this->get_child_weight(p->right);
+            child->weight = 1 + this->get_child_weight(child->left) + this->get_child_weight(child->right);
             
-            child->right = p->right;
-            if (child->right) {
-                child->right->parent = child;
-            }
-            
-            p->right = child;
-
-            if (p->right) {
-                p->right->weight = 1 + get_child_weight(p->right->left) + get_child_weight(p->right->right);
-            }
-
-            p->weight = 1 + get_child_weight(p->left) + get_child_weight(p->right);
-
             break;
         } else if (rd > ld && rd - ld > 1) {
             // Левый поворот. 
             // Глубина правого поддерева больше, чем глубина левого
 
             child = p->right;
+            parent = p->parent;
 
-            // Такой поворот не изменит ситуацию
-            if (child->left == NULL) {
-                return;
+            if (parent) {
+                if (parent->right == p) {
+                    parent->right = child;
+                } else if (parent->left == p) {
+                    parent->left = child;
+                }
+            } else {
+                this->tree->root = child;
             }
-            
-            this->tmb_data = p->data;
-            p->data = child->data;
-            child->data = this->tmb_data;
+            child->parent = parent;
+            p->parent = child;
 
-            p->right = child->right;
+            p->right = child->left;
             if (p->right) {
                 p->right->parent = p;
             }
 
-            child->right = child->left;
-            if (child->right) {
-                child->right->parent = child;
-            }
-            
-            child->left = p->left;
-            if (child->left) {
-                child->left->parent = child;
-            }
-            
-            p->left = child;
+            child->left = p;
 
-            if (p->left) {
-                p->left->weight = 1 + get_child_weight(p->left->left) + get_child_weight(p->left->right);
-            }
+            p->weight = 1 + this->get_child_weight(p->left) + this->get_child_weight(p->right);
+            child->weight = 1 + this->get_child_weight(child->left) + this->get_child_weight(child->right);
 
-            p->weight = 1 + get_child_weight(p->left) + get_child_weight(p->right);
-            
             break;
         }
 
@@ -515,12 +495,28 @@ void bntree::balance(node_t *p) {
 }
 
 /*
+ * Возвращает первое число в степени 2, которое больше или ровно x
+ */
+uint64_t bntree::cpl2(uint64_t x) {
+    x = x - 1;
+    x = x | (x >> 1);
+    x = x | (x >> 2);
+    x = x | (x >> 4);
+    x = x | (x >> 8);
+    x = x | (x >> 16);
+    x = x | (x >> 32);
+
+    return x + 1;
+}
+
+/*
  * Двоичный логарифм от числа
  */
 long bntree::ilog2(long d) {
     int result;
     std::frexp(d, &result);
     return result - 1;
+    //return result;
 }
 
 /*
@@ -529,6 +525,12 @@ long bntree::ilog2(long d) {
 uint64_t bntree::weight_to_depth(node_t *p) {
     if (p == NULL) {
         return 0;
+    }
+
+    if (p->weight == 1) {
+        return 1;
+    } else if (p->weight == 2) {
+        return 2;
     }
 
     return this->ilog2(this->cpl2(p->weight));

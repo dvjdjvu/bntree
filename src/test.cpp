@@ -117,11 +117,16 @@ int main() {
     
     bntree st;
     
+    //cout << st.cpl2(0) << endl;
     //cout << st.cpl2(1) << endl;
     //cout << st.cpl2(2) << endl;
     //cout << st.cpl2(3) << endl;
-    //long a = st.cpl2(7);
-    //cout << st.ilog2(a) << endl;
+    //cout << st.cpl2(4) << endl;
+    //cout << st.cpl2(7) << endl;
+    //cout << st.cpl2(8) << endl;
+    //cout << st.cpl2(9) << endl;
+    //long a = st.cpl2(2);
+    //cout << st.ilog2(8) << endl;
     //cout << st.cpl2(4294967295) << endl;
     //cout << st.cpl2(4294967297) << endl;
     
@@ -129,11 +134,11 @@ int main() {
     
     st.insert("50", "ssss");
     
-    st.insert("25");
+    //st.insert("25");
     
-    st.insert("15");
+    //st.insert("15");
     //st.insert("17");
-    st.insert("11");
+    //st.insert("11");
     
     //st.insert("35");
     //st.insert("30");
@@ -141,11 +146,13 @@ int main() {
     
     st.insert("75");
     
-    st.insert("65");
+    //st.insert("65");
     //st.insert("60");
     //st.insert("70");
+    st.print();
     
-    //st.insert("90");
+    st.insert("90");
+    //st.print();
     //st.insert("80");
     //st.insert("95");
     
@@ -156,7 +163,7 @@ int main() {
     
     st.print();
     
-    //return -1;
+    return -1;
     
     puts("\nerase");
     
