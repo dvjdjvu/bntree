@@ -61,9 +61,6 @@ uint64_t bntree::search(string key) {
 }
 
 void bntree::insert(string key, string val) {
-
-    //cout << "insert " << key << endl;
-
     node_t *search_node, *prev_node, **node;
 
     node = &this->tree->root;
@@ -130,8 +127,6 @@ void bntree::insert(string key, string val) {
         }
     }
 
-    //cout << "insert balance " << key << endl;
-    //this->print();
     this->balance(search_node);
 
     return;
@@ -187,7 +182,7 @@ bool bntree::erase_simple(node_t *search_node) {
         }
 
     } else {
-        // Удаляемый узел имеет двух детей. Такой случай здесь не обрабатывается.
+        // Удаляемый узел имеет двух детей. Здесь не обрабатываем.
 
         return false;
     }
@@ -211,10 +206,9 @@ void bntree::erase(uint64_t index) {
             } else if (search_node->left && search_node->right) {
                 // Самый сложный случай, удаляемый узел имеет 2-х детей.
 
-                // Обходим через право.
                 node_t *del_node = search_node;
                 uint64_t _index;
-                // Балансировка, если правый вес больше левого то удаляем через право
+                // Маленькая балансировка, если правый вес больше левого то удаляем через право
                 // иначе через лево
                 if (search_node->right->weight > search_node->left->weight) {
                     _index = index_node + 1;
@@ -268,11 +262,10 @@ void bntree::erase(string key) {
                 // pass
             } else if (search_node->left && search_node->right) {
                 // Самый сложный случай, удаляемый узел имеет 2-х детей.
-
-                // Обходим через право.
+                
                 node_t *del_node = search_node;
                 uint64_t _index;
-                // Балансировка, если правый вес больше левого то удаляем через право
+                // Маленькая балансировка, если правый вес больше левого то удаляем через право
                 // иначе через лево
                 if (search_node->right->weight > search_node->left->weight) {
                     _index = index_node + 1;
@@ -375,7 +368,6 @@ uint64_t bntree::size() {
 
 void bntree::print() {
     this->print(this->tree->root, 5);
-    //puts("\n###########################");
 }
 
 void bntree::print(node_t *p, int indent) {
@@ -414,13 +406,8 @@ void bntree::balance(node_t *p) {
     uint64_t rd = 0;
 
     for (;;) {
-
         ld = this->weight_to_depth(p->left);
         rd = this->weight_to_depth(p->right);
-
-        //cout << "p->data.key " << p->data.key << " ld " << ld << " rd " << rd;
-        //cout << " lw " << get_child_weight(p->left) << " rw " << get_child_weight(p->right) << endl;
-        //printf("ld %ld rd %ld\n", ld, rd);
 
         if (ld > rd && ld - rd > 1) {
             // Правый поворот. 
@@ -516,7 +503,6 @@ long bntree::ilog2(long d) {
     int result;
     std::frexp(d, &result);
     return result - 1;
-    //return result;
 }
 
 /*
