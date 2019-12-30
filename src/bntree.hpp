@@ -68,7 +68,6 @@ public:
     
 private:    
     tree_t *tree;
-    node_t *tmb_node;
     
     uint64_t get_child_weight(node_t *node);
     node_t *node_new();

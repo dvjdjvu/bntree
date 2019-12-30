@@ -132,7 +132,7 @@ int main() {
     
     //return -1;
     
-    st.insert("50", "ssss");
+    //st.insert("50", "ssss");
     
     //st.insert("25");
     
@@ -144,17 +144,17 @@ int main() {
     //st.insert("30");
     //st.insert("40");
     
-    st.insert("75");
+    //st.insert("75");
     
     //st.insert("65");
     //st.insert("60");
     //st.insert("70");
     st.print();
     
-    st.insert("90");
+    //st.insert("90");
     //st.print();
     //st.insert("80");
-    //st.insert("95");
+    //st.insert("95");    
     
     cout << "size(): " << st.size() << endl;
     

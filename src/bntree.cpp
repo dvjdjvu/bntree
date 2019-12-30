@@ -438,6 +438,7 @@ void bntree::balance(node_t *p) {
             p->weight = 1 + this->get_child_weight(p->left) + this->get_child_weight(p->right);
             child->weight = 1 + this->get_child_weight(child->left) + this->get_child_weight(child->right);
             
+            //p = child;
             break;
         } else if (rd > ld && rd - ld > 1) {
             // Левый поворот. 
@@ -468,6 +469,7 @@ void bntree::balance(node_t *p) {
             p->weight = 1 + this->get_child_weight(p->left) + this->get_child_weight(p->right);
             child->weight = 1 + this->get_child_weight(child->left) + this->get_child_weight(child->right);
 
+            //p = child;
             break;
         }
 
