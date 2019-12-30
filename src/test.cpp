@@ -156,6 +156,20 @@ int main() {
     //st.insert("80");
     //st.insert("95");    
     
+    st.insert("8");
+    st.insert("4");
+    st.insert("30");
+    st.insert("2");
+    st.insert("6");
+    st.insert("10");
+    st.insert("36");
+    st.insert("9");
+    st.insert("12");
+    st.insert("38");
+    st.insert("13");
+    st.insert("14");
+    st.insert("15");
+            
     cout << "size(): " << st.size() << endl;
     
     //for (int i = 0; i < st.size(); i++ )
